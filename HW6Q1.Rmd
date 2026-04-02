@@ -1,0 +1,97 @@
+---
+title: "HW6 Q1"
+output: html_document
+date: "2026-04-02"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+ 
+```{r}
+ library(ggplot2)
+library(tidyr)
+library(dplyr)
+
+
+load('C:/Users/hybaa/Desktop/HW6/house_prices.rda')
+
+ls()
+names(house_prices)
+head(house_prices)
+str(house_prices)
+#A
+
+house_prices <- house_prices %>%
+  mutate(year = as.integer(format(date, "%Y")))
+
+# Define x-axis ticks
+x_breaks <- c(1980, 2000, 2020)
+x_labels <- c("'80", "'00", "'20")
+
+plot_a <- ggplot(house_prices, aes(x = year, y = house_price_index)) +
+  geom_line(color = "steelblue", linewidth = 0.5) +
+  facet_wrap(~ state) +
+  scale_x_continuous(breaks = x_breaks, labels = x_labels) +
+  labs(
+    title = "House Price Index Over Time by State",
+    x     = "Year",
+    y     = "House Price Index"
+  ) +
+  theme_bw(base_size = 7) +
+  theme(
+    strip.text    = element_text(size = 6, face = "bold"),
+    axis.text.x   = element_text(size = 5),
+    panel.spacing = unit(0.3, "lines"),
+    plot.title    = element_text(size = 10, face = "bold", hjust = 0.5)
+  )
+
+print(plot_a)
+
+
+#B
+
+
+house_reshaped <- house_prices %>%
+  gather(key   = "measure",
+         value = "value",
+         -date,               
+         -state,             
+         -year,              
+         -house_price_perc)   
+
+head(house_reshaped)
+
+
+#C
+
+plot_c <- ggplot(house_reshaped,
+                 aes(x = year, y = value,
+                     color = measure, group = measure)) +
+  geom_line(linewidth = 0.45) +
+  facet_wrap(~ state) +
+  scale_x_continuous(breaks = x_breaks, labels = x_labels) +
+  scale_color_manual(
+    values = c("house_price_index" = "steelblue",
+               "unemploy_perc"    = "tomato"),
+    labels = c("house_price_index" = "House Price Index",
+               "unemploy_perc"    = "Unemployment %")
+  ) +
+  labs(
+    title = "House Price Index & Unemployment % by State",
+    x     = "Year",
+    y     = "Value",
+    color = "Measure"
+  ) +
+  theme_bw(base_size = 7) +
+  theme(
+    strip.text      = element_text(size = 6, face = "bold"),
+    axis.text.x     = element_text(size = 5),
+    legend.position = "bottom",
+    panel.spacing   = unit(0.3, "lines"),
+    plot.title      = element_text(size = 10, face = "bold", hjust = 0.5)
+  )
+
+print(plot_c)
+```
+ 
